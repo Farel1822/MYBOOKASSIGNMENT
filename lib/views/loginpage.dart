@@ -2,6 +2,8 @@
 
 import 'dart:convert';
 
+import 'package:mybookassignment/views/mainpage.dart';
+
 import '../shared/myserverconfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -126,10 +128,11 @@ class _LoginPageState extends State<LoginPage> {
     String _pass = _passEditingController.text;
 
     http.post(
-        Uri.parse("${MyServerConfig.server}/bookbytes/php/login_user.php"),
+        Uri.parse(
+            "${MyServerConfig.server}/mybookassignment/php/login_user.php"),
         body: {"email": _email, "password": _pass}).then((response) {
-      // print(response.statusCode);
-      // print(response.body);
+      print(response.statusCode);
+      print(response.body);
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         if (data['status'] == "success") {
@@ -138,7 +141,10 @@ class _LoginPageState extends State<LoginPage> {
             content: Text("Login Success"),
             backgroundColor: Colors.green,
           ));
-
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (content) => MainPage(userdata: user)));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Login Failed"),

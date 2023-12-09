@@ -1,10 +1,11 @@
 //Buyer page
 
 import 'dart:convert';
-import '../models/book.dart';
-import '../models/user.dart';
-import '../shared/mydrawer.dart';
-import '../shared/myserverconfig.dart';
+import 'package:mybookassignment/models/book.dart';
+import 'package:mybookassignment/models/user.dart';
+import 'package:mybookassignment/shared/mydrawer.dart';
+import 'package:mybookassignment/shared/myserverconfig.dart';
+import 'package:mybookassignment/views/newbookpage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -85,7 +86,7 @@ class _MainPageState extends State<MainPage> {
                               padding: const EdgeInsets.all(4.0),
                               child: Image.network(
                                   fit: BoxFit.fill,
-                                  "${MyServerConfig.server}/bookbytes/assets/books/${bookList[index].bookId}.png"),
+                                  "${MyServerConfig.server}/mybookassignment/assets/books/${bookList[index].bookId}.png"),
                             ),
                           ),
                           Flexible(
@@ -122,13 +123,19 @@ class _MainPageState extends State<MainPage> {
   }
 
   void newBook() {
-    if (widget.userdata.userid.toString() == "0") {
+    if (widget.userdata.userid.toString() == "0" ||
+        widget.userdata.username.toString() == "Unregistered") {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Please register an account"),
         backgroundColor: Colors.red,
       ));
     } else {
-      //
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (content) => NewBookPage(
+                    userdata: widget.userdata,
+                  )));
     }
   }
 
@@ -142,23 +149,32 @@ class _MainPageState extends State<MainPage> {
   }
 
   void loadBooks() {
-    http.get(Uri.parse("${MyServerConfig.server}/bookbytes/php/load_books.php"),
+    http.get(
+        Uri.parse(
+            "${MyServerConfig.server}/mybookassignment/php/load_books.php"),
         headers: {
-          //get array
-        }).then((response) {
-      //log(response.body);
+          // Tambahkan header jika diperlukan
+        }).then((http.Response response) {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
+        print(response.body);
         if (data['status'] == "success") {
           bookList.clear();
-          data['data']['books'].forEach((v) {
-            bookList.add(Book.fromJson(v));
-          });
+          for (var bookData in data['data']) {
+            bookList.add(Book.fromJson(bookData));
+          }
         } else {
-          //if no status failed
+          print('Failed. Status: ${data['status']}');
         }
+      } else {
+        print('Failed. Status: ${response.statusCode}');
+        print('Response Body: ${response.body}');
       }
       setState(() {});
+    }).catchError((error, stackTrace) {
+      print('Error: $error');
+      print('Stack Trace: $stackTrace');
+      // Tangani kesalahan di sini
     });
   }
 }

@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../shared/mydrawer.dart';
 
-class CommunityPage extends StatefulWidget {
+class SellerPage extends StatefulWidget {
   final User userdata;
 
-  const CommunityPage({super.key, required this.userdata});
+  const SellerPage({super.key, required this.userdata});
 
   @override
-  State<CommunityPage> createState() => _CommunityPageState();
+  State<SellerPage> createState() => _SellerPageState();
 }
 
-class _CommunityPageState extends State<CommunityPage> {
+class _SellerPageState extends State<SellerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +23,7 @@ class _CommunityPageState extends State<CommunityPage> {
               children: [
                 //CircleAvatar(backgroundImage: AssetImage('')),
                 Text(
-                  "Comunity",
+                  "Order and Sales",
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -43,11 +43,11 @@ class _CommunityPageState extends State<CommunityPage> {
               ),
             )),
         drawer: MyDrawer(
-          page: "community",
+          page: "seller",
           userdata: widget.userdata,
         ),
         body: const Center(
-          child: Text("COMMUNITY PAGE"),
+          child: Text("ORDER AND SALES PAGE"),
         ));
   }
 }

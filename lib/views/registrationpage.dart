@@ -24,6 +24,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screemWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
         appBar: AppBar(title: const Text("Registration Form")),
         body: SingleChildScrollView(
@@ -31,6 +33,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
             child: Column(children: [
               Image.asset("assets/images/register.jpg"),
               Container(
+                width: screemWidth,
+                height: screenHeight,
                 padding: const EdgeInsets.all(16),
                 child: Form(
                   key: _formKey,
@@ -248,7 +252,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     String _pass = _passEditingController.text;
 
     http.post(
-        Uri.parse("${MyServerConfig.server}/bookbytes/php/register_user.php"),
+        Uri.parse(
+            "${MyServerConfig.server}/mybookassignment/php/register_user.php"),
         body: {
           "name": _name,
           "email": _email,
