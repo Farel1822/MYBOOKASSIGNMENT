@@ -37,7 +37,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -46,6 +46,7 @@ class _SplashPageState extends State<SplashPage> {
             "BookBytes",
             style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
           ),
+          Image.asset('assets/images/buku.jpg', width: 200, height: 200),
           CircularProgressIndicator(),
           Text("Version 0.1")
         ],
@@ -60,7 +61,8 @@ class _SplashPageState extends State<SplashPage> {
     bool rem = (prefs.getBool('rem')) ?? false;
     if (rem) {
       http.post(
-          Uri.parse("${MyServerConfig.server}/mybookassignment/php/login_user.php"),
+          Uri.parse(
+              "${MyServerConfig.server}/mybookassignment/php/login_user.php"),
           body: {"email": email, "password": password}).then((response) {
         if (response.statusCode == 200) {
           var data = jsonDecode(response.body);
