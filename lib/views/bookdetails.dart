@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:mybookassignment/models/user.dart';
 import 'package:mybookassignment/shared/myserverconfig.dart';
-import 'package:mybookassignment/views/editbookpage.dart';
+import 'package:mybookassignment/views/undevelop/editbookpage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -25,7 +25,7 @@ class _BookDetailsState extends State<BookDetails> {
   late double screenWidth, screenHeight;
   final f = DateFormat('dd-MM-yyyy hh:mm a');
   bool bookowner = false;
-  int quantity = 1;
+  int quantity = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +86,29 @@ class _BookDetailsState extends State<BookDetails> {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  addToCart();
+                  if (quantity > 0) {
+                    addToCart();
+                  } else {
+                    // Tampilkan popup jika quantity = 0
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Cannot Add to Cart"),
+                          content: Text(
+                              "Quantity is 0. Please select a quantity greater than 0."),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("OK"),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.blue,
@@ -161,7 +183,7 @@ class _BookDetailsState extends State<BookDetails> {
                 height: screenHeight * 0.4,
                 width: screenWidth,
                 child: Image.network(
-                  "${MyServerConfig.server}/mybookassignment/assets/books/${widget.book.bookId}.png",
+                  "${MyServerConfig.server}/assets/books/${widget.book.bookId}.png",
                   fit: BoxFit.fill,
                 ),
               ),
@@ -307,13 +329,10 @@ class _BookDetailsState extends State<BookDetails> {
   }
 
   void deleteBook() {
-    http.post(
-        Uri.parse(
-            "${MyServerConfig.server}/mybookassignment/php/delete_book.php"),
-        body: {
-          "userid": widget.user.userid.toString(),
-          "bookid": widget.book.bookId.toString(),
-        }).then((response) {
+    http.post(Uri.parse("${MyServerConfig.server}/api/delete_book.php"), body: {
+      "userid": widget.user.userid.toString(),
+      "bookid": widget.book.bookId.toString(),
+    }).then((response) {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
         if (data['status'] == "success") {
@@ -377,8 +396,7 @@ class _BookDetailsState extends State<BookDetails> {
 
   void insertToCart() {
     http.post(
-      Uri.parse(
-          "${MyServerConfig.server}/mybookassignment/php/insert_cart.php"),
+      Uri.parse("${MyServerConfig.server}/api/insert_cart.php"),
       body: {
         "userid": widget.user.userid.toString(),
         "book_id": widget.book.bookId.toString(),

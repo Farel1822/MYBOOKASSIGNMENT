@@ -5,6 +5,7 @@ import 'package:mybookassignment/models/cart.dart';
 import 'package:mybookassignment/models/user.dart';
 import 'package:mybookassignment/shared/myserverconfig.dart';
 import 'package:http/http.dart' as http;
+import 'package:mybookassignment/views/billscreen.dart';
 
 class LoadCartPage extends StatefulWidget {
   final User userdata;
@@ -26,6 +27,7 @@ class _LoadCartPageState extends State<LoadCartPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userid = widget.userdata.userid ?? "defaultUserID";
     return Scaffold(
       appBar: AppBar(
         title: Text("Shopping Cart"),
@@ -83,12 +85,17 @@ class _LoadCartPageState extends State<LoadCartPage> {
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             ElevatedButton(
-              onPressed: () {
-                // Fungsi untuk melanjutkan ke proses pembayaran atau tindakan selanjutnya
-                // bisa ditambahkan di sini
-              },
-              child: Text("Checkout"),
-            ),
+                onPressed: () async {
+                  await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (content) => BillScreen(
+                                user: widget.userdata,
+                                totalprice: calculateTotalPriceWithShipping()
+                              )));
+                  loadCart(userid);
+                },
+                child: const Text("Pay Now"))
           ],
         ),
       ),
@@ -111,7 +118,7 @@ class _LoadCartPageState extends State<LoadCartPage> {
   }
 
   double calculateShippingCost(int quantity) {
-    return 10.0; 
+    return 10.0;
   }
 
   double calculateTotalPriceWithShipping() {
@@ -126,7 +133,7 @@ class _LoadCartPageState extends State<LoadCartPage> {
     http
         .get(
       Uri.parse(
-          "${MyServerConfig.server}/mybookassignment/php/load_cart.php?userid=$userid"),
+          "${MyServerConfig.server}/api/load_cart.php?userid=$userid"),
     )
         .then((response) {
       log(response.body);
@@ -155,7 +162,6 @@ class _LoadCartPageState extends State<LoadCartPage> {
   }
 
   void deleteCart(String userid, int index) {
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -189,16 +195,14 @@ class _LoadCartPageState extends State<LoadCartPage> {
 
     http
         .delete(Uri.parse(
-            "${MyServerConfig.server}/mybookassignment/php/delete_cart.php?userid=$userid&cartid=$cartId"))
+            "${MyServerConfig.server}/api/delete_cart.php?userid=$userid&cartid=$cartId"))
         .then((response) {
       log(response.body);
-      print("cekk user id :  $userid");
       if (response.statusCode == 200) {
         log(response.body);
         var data = jsonDecode(response.body);
         print(response.body);
         if (data['status'] == "success") {
-          // Update cartList without the deleted item
           setState(() {
             cartList.removeAt(index);
           });

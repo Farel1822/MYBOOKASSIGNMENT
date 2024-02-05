@@ -47,7 +47,7 @@ class _SplashPageState extends State<SplashPage> {
             style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
           ),
           CircularProgressIndicator(),
-          Text("Version 4.3.1")
+          Text("Version 0.1")
         ],
       )),
     );
@@ -60,8 +60,7 @@ class _SplashPageState extends State<SplashPage> {
     bool rem = (prefs.getBool('rem')) ?? false;
     if (rem) {
       http.post(
-          Uri.parse(
-              "${MyServerConfig.server}/mybookassignment/php/login_user.php"),
+          Uri.parse("${MyServerConfig.server}/api/login_user.php"),
           body: {"email": email, "password": password}).then((response) {
         if (response.statusCode == 200) {
           var data = jsonDecode(response.body);

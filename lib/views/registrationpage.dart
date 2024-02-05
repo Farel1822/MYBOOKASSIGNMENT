@@ -15,6 +15,7 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _nameEditingController = TextEditingController();
+  final TextEditingController _phoneEditingController = TextEditingController();
   final TextEditingController _emailditingController = TextEditingController();
   final TextEditingController _passEditingController = TextEditingController();
   final TextEditingController _pass2EditingController = TextEditingController();
@@ -27,14 +28,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
     double screemWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-        appBar: AppBar(title: const Text("Registration Form")),
+        appBar: AppBar(
+            iconTheme: const IconThemeData(color: Colors.white),
+            backgroundColor : Colors.orange,
+            title: const Text("Registration Form", style: TextStyle(color: Colors.white),)),
         body: SingleChildScrollView(
           child: Center(
             child: Column(children: [
-              Image.asset("assets/images/register.jpg"),
+              Image.asset("assets/images/regis.jpg"),
               Container(
                 width: screemWidth,
-                height: screenHeight,
                 padding: const EdgeInsets.all(16),
                 child: Form(
                   key: _formKey,
@@ -44,7 +47,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
                       child: Column(children: [
                         const Text(
-                          "User Registration",
+                          "E-BOOKS Registration",
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
@@ -71,6 +74,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   !val.contains(".")
                               ? "enter a valid email"
                               : null,
+                        ),
+                        TextFormField(
+                          controller: _phoneEditingController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Phone',
+                            icon: Icon(Icons.phone),
+                          ),
                         ),
                         TextFormField(
                           controller: _passEditingController,
@@ -250,14 +261,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
     String _name = _nameEditingController.text;
     String _email = _emailditingController.text;
     String _pass = _passEditingController.text;
+    String _phone = _phoneEditingController.text;
+    
 
     http.post(
         Uri.parse(
-            "${MyServerConfig.server}/mybookassignment/php/register_user.php"),
+            "${MyServerConfig.server}/api/register_user.php"),
         body: {
           "name": _name,
           "email": _email,
-          "password": _pass
+          "password": _pass,
+          "phone":_phone,
         }).then((response) {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body);
